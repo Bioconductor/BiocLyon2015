@@ -1,0 +1,97 @@
+---
+title: "L0 -- Course Overview"
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
+vignette: >
+  % \VignetteIndexEntry{L0 -- Course Overview}
+  % \VignetteEngine{knitr::rmarkdown}
+---
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+options(width=100, max.print=1000)
+knitr::opts_chunk$set(
+    eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
+    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")))
+```
+
+```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
+```
+
+Author: Martin Morgan
+  (<a href="mailto:mtmorgan@fhcrc.org">mtmorgan@fhcrc.org</a>)<br />
+Date: 26-28 October, 2015<br />
+
+This course provides a broad introduction to the analysis and
+comprehension of high-throughput sequence data using R and
+Bioconductor; many other useful software tools are not discussed.  The
+topics and learning objectives to be address are as follows:
+
+- [Introduction to Bioconductor](L1-Introduction.html): Familiarity
+  with overall sequence analysis work flows. The diversity of analysis
+  challenges addressed by Bioconductor. The role of Bioconductor
+  packages in specific work flow steps. Bioconductor resources for
+  help and effective use. Primary packages: [GenomicRanges][],
+  [SummarizedExperiment][].
+
+- [Sequence Data Representation and Manipulation](L2-Data-Representation.html):
+  Common genomic file types (FASTA/FASTQ, BED, WIG, GTF, etc) and
+  their Bioconductor representation and manipulation. Essential
+  Bioconductor data structures (e.g., DNAStringSet,
+  GenomicRanges). Bioconductor gene and genome 'annotation'
+  resources. Simple Bioconductor solutions to common bioinformatic
+  tasks. Primary packages: [AnnotationHub][], [rtracklayer][],
+  [GenomicFeatures][], [GenomicAlignments][], [ShortRead][],
+  [Biostrings][].
+
+- [Variant Calling and Annotation](L3-Variants.html): Conceptual
+  understanding of variant calling approaches and (primarily
+  non-Bioconductor) tools. Exploratory approaches to variant calling
+  in Bioconductor. Working with called variants, e.g., classifying
+  variants to genomic regions of interest and predicting effects of
+  variants. Primary packages: [VariantTools][], [r5vc][],
+  [VariantAnnotation][], [VariantFiltering][].
+
+- [RNA-Seq Differential Expression](L4-RNASeq.html): Bioconductor
+  known-gene RNA-seq differential expression work flow, from aligned
+  reads to differential expression of genes. Important statistical
+  issues and their resolution. Placing results of differential
+  expression analysis into biological context. Brief discussion of
+  novel-gene and transcript-level RNAseq differential expression
+  analysis. Primary packages: [DESeq2][], [edgeR][].
+
+- [Working with Large Data](L5-Large-Data.html): Overcoming common
+  pitfalls in memory management and computational throughput when
+  writing R code. Adopting restriction, iteration, and parallel
+  evaluation strategies for working with large data. Primary packages:
+  [BiocParallel][], [GenomicFiles][].
+
+- [Data Visualization](L6-Visualization.html): Challenges to
+  visualizing genomic data. Opportunities for familiar and novel
+  genomic visualizations in Bioconductor. Approaches to interactive
+  visualization with shiny. Adopting strategies for reproducible and
+  collaborative research. Primary packages: [Gviz][],
+  [ReportingTools][], [shiny][], ([ggbio][]).
+
+[AnnotationHub]: http://bioconductor.org/packages/AnnotationHub
+[BiocParallel]: http://bioconductor.org/packages/BiocParallel
+[Biostrings]: http://bioconductor.org/packages/Biostrings
+[DESeq2]: http://bioconductor.org/packages/DESeq2
+[GenomicAlignments]: http://bioconductor.org/packages/GenomicAlignments
+[GenomicFeatures]: http://bioconductor.org/packages/GenomicFeatures
+[GenomicFiles]: http://bioconductor.org/packages/GenomicFiles
+[GenomicRanges]: http://bioconductor.org/packages/GenomicRanges
+[Gviz]: http://bioconductor.org/packages/Gviz
+[ReportingTools]: http://bioconductor.org/packages/ReportingTools
+[ShortRead]: http://bioconductor.org/packages/ShortRead
+[SummarizedExperiment]: http://bioconductor.org/packages/SummarizedExperiment
+[VariantAnnotation]: http://bioconductor.org/packages/VariantAnnotation
+[VariantFiltering]: http://bioconductor.org/packages/VariantFiltering
+[VariantTools]: http://bioconductor.org/packages/VariantTools
+[edgeR]: http://bioconductor.org/packages/edgeR
+[ggbio]: http://bioconductor.org/packages/ggbio
+[r5vc]: http://bioconductor.org/packages/r5vc
+[rtracklayer]: http://bioconductor.org/packages/rtracklayer
+[shiny]: http://shiny.rstudio.org
