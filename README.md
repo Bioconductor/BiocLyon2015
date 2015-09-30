@@ -45,15 +45,82 @@ topics and learning objectives to be address are as follows:
 
 Additional topics may be discussed briefly and on an ad hoc basis. 
 
-<!-- 
-Following up on the January meeting and in preparing the course, I
-would like to confirm with you the topics we selected for this course
-and ask you some details about learning objectives that we will
-communicate to participants.
+# Schedule
 
-Could you thus:
+## Monday
 
-- Confirm that the selected topics are ok;
-- Provide some short sentences describing learning objectives for each of these topics
-- Indicate softwares and versions that will be needed on laptops/cloud
- -->
+Morning
+
+- Introduction to _R_ and _Bioconductor_
+
+Afternoon
+
+- Working with sequence data in _Bioconductor_
+    - Overall sequence work flows
+    - Key _Bioconductor_ packages and classes
+    - 'Annotation' resources
+    - Working with large data
+    - Common bioinformatics tasks, easy _Bioconductor_ solutions
+
+- Participant lightning talks -- short, _ad hoc_ or lightly prepared
+  presentations by workshop participants to introduce their work. A
+  couple of participants will volunteer during each time slot
+  throughout the course.
+
+## Tuesday
+
+Morning
+
+- Variant annotation and calling
+    - Working with called variants: VCF files, [VariantAnnotation][],
+      [VariantFiltering][].
+    - Calling variants. Common workflows outside
+      _Bioconductor_. Alternative approaches in _Bioconductor_.
+
+- Participant lightning talks -- short, _ad hoc_ or lightly prepared
+  presentations by workshop participants to introduce their work. 
+
+Afternoon
+
+- RNA-seq differential expression. 
+    - Overall work flow, statistical issues, and implementation using
+      [DESeq2][] and [edgeR][]
+    - [kallisto][] and other newer approaches; [limma][] `voom()`.
+
+- Participant lightning talks -- short, _ad hoc_ or lightly prepared
+  presentations by workshop participants to introduce their work. 
+
+## Wednesday
+
+Morning
+
+- One of:
+    - Working with large data 
+    - [csaw][], [ChIPseeker][] and other ChIP-seq analysis
+    - gene set and other down-stream analysis facilities.
+
+- Participant lightning talks -- short, _ad hoc_ or lightly prepared
+  presentations by workshop participants to introduce their work. 
+
+Afternoon
+
+- Data visualization and reporting
+    - Static visualization, e.g., [Gviz][]
+    - [shiny][] for interactive visualizations
+    - [ReportingTools][] for effective and flexible reports
+    - Sharing interactive results to your less-fortunate
+      _R_-illiterate colleagues
+
+[VariantAnnotation]: https://bioconductor.org/packages/VariantAnnotation
+[VariantFiltering]: https://bioconductor.org/packages/VariantFiltering
+[DESeq2]: https://bioconductor.org/packages/DESeq2
+[edgeR]: https://bioconductor.org/packages/edgeR
+[limma]: https://bioconductor.org/packages/limma
+[csaw]: https://bioconductor.org/packages/csaw
+[ChIPseeker]: https://bioconductor.org/packages/ChIPseeker
+[Gviz]: https://bioconductor.org/packages/Gviz
+[ReportingTools]: https://bioconductor.org/packages/ReportingTools
+
+[shiny]: http://shiny.rstudio.com/
+[kallisto]: http://pachterlab.github.io/kallisto
+
