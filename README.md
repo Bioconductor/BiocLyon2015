@@ -45,21 +45,26 @@ topics and learning objectives to be address are as follows:
 
 Additional topics may be discussed briefly and on an ad hoc basis. 
 
-# Schedule
+# Tentative Schedule
 
 ## Monday
 
-Morning
+9:00 - 12:30 (break 10:30 - 11:00)
 
 - Introduction to _R_ and _Bioconductor_
+    - From vectors to objects
+    - Help! and other resources
+    - Why _Bioconductor_? [SummarizedExperiment][]
 
-Afternoon
+1:30 - 5:00 (break 3:00 - 3:30)
 
 - Working with sequence data in _Bioconductor_
     - Overall sequence work flows
-    - Key _Bioconductor_ packages and classes
-    - 'Annotation' resources
-    - Working with large data
+    - Key _Bioconductor_ packages and classes -- [GenomicRanges][],
+      [Biostrings][], [ShortRead][], [rtracklayer][]
+    - 'Annotation' resources -- [GenomicFeatures][],
+      [AnnotationHub][], [biomaRt][]
+    - Working with large data -- [BiocParallel][], [GenomicFiles][]
     - Common bioinformatics tasks, easy _Bioconductor_ solutions
 
 - Participant lightning talks -- short, _ad hoc_ or lightly prepared
@@ -69,40 +74,42 @@ Afternoon
 
 ## Tuesday
 
-Morning
+9:00 - 12:30 (break 10:30 - 11:00)
 
 - Variant annotation and calling
     - Working with called variants: VCF files, [VariantAnnotation][],
       [VariantFiltering][].
     - Calling variants. Common workflows outside
-      _Bioconductor_. Alternative approaches in _Bioconductor_.
+      _Bioconductor_. Alternative approaches in
+      _Bioconductor_. [VariantTools][], [r5vc][].
 
 - Participant lightning talks -- short, _ad hoc_ or lightly prepared
   presentations by workshop participants to introduce their work. 
 
-Afternoon
+1:30 - 5:00 (break 3:00 - 3:30)
 
 - RNA-seq differential expression. 
     - Overall work flow, statistical issues, and implementation using
       [DESeq2][] and [edgeR][]
-    - [kallisto][] and other newer approaches; [limma][] `voom()`.
+    - [kallisto][] and other newer approaches; [limma][] `voom()`
 
 - Participant lightning talks -- short, _ad hoc_ or lightly prepared
   presentations by workshop participants to introduce their work. 
 
 ## Wednesday
 
-Morning
+9:00 - 12:30 (break 10:30 - 11:00)
 
 - One of:
-    - Working with large data 
+    - Working with large data [GenomicFiles][], [BiocParallel][]
     - [csaw][], [ChIPseeker][] and other ChIP-seq analysis
-    - gene set and other down-stream analysis facilities.
+    - Gene set and other down-stream analysis facilities. [limma][]
+      gene set functions, [Category][], [GOstats][], [WGCNA][].
 
 - Participant lightning talks -- short, _ad hoc_ or lightly prepared
   presentations by workshop participants to introduce their work. 
 
-Afternoon
+1:30 - 5:00 (break 3:00 - 3:30)
 
 - Data visualization and reporting
     - Static visualization, e.g., [Gviz][]
@@ -111,16 +118,30 @@ Afternoon
     - Sharing interactive results to your less-fortunate
       _R_-illiterate colleagues
 
-[VariantAnnotation]: https://bioconductor.org/packages/VariantAnnotation
-[VariantFiltering]: https://bioconductor.org/packages/VariantFiltering
-[DESeq2]: https://bioconductor.org/packages/DESeq2
-[edgeR]: https://bioconductor.org/packages/edgeR
-[limma]: https://bioconductor.org/packages/limma
-[csaw]: https://bioconductor.org/packages/csaw
+[AnnotationHub]: https://bioconductor.org/packages/AnnotationHub
+[BiocParallel]: https://bioconductor.org/packages/BiocParallel
+[Biostrings]: https://bioconductor.org/packages/Biostrings
+[Category]: https://bioconductor.org/packages/Category
 [ChIPseeker]: https://bioconductor.org/packages/ChIPseeker
+[DESeq2]: https://bioconductor.org/packages/DESeq2
+[GenomicRanges]: https://bioconductor.org/packages/GenomicRanges
+[GenomicFiles]: https://bioconductor.org/packages/GenomicFiles
+[GenomicFeatures]: https://bioconductor.org/packages/GenomicFeatures
+[GOstats]: https://bioconductor.org/packages/GOstats
 [Gviz]: https://bioconductor.org/packages/Gviz
 [ReportingTools]: https://bioconductor.org/packages/ReportingTools
+[ShortRead]: https://bioconductor.org/packages/ShortRead
+[SummarizedExperiment]: https://bioconductor.org/packages/SummarizedExperiment
+[VariantAnnotation]: https://bioconductor.org/packages/VariantAnnotation
+[VariantFiltering]: https://bioconductor.org/packages/VariantFiltering
+[VariantTools]: https://bioconductor.org/packages/VariantTools 
+[biomaRt]: https://bioconductor.org/packages/biomaRt
+[csaw]: https://bioconductor.org/packages/csaw
+[edgeR]: https://bioconductor.org/packages/edgeR
+[limma]: https://bioconductor.org/packages/limma
+[rtracklayer]: https://bioconductor.org/packages/rtracklayer
+[r5vc]: https://bioconductor.org/packages/r5vc
+[WGCNA]: https://cran.rstudio.com/web/packages/WGCNA
 
 [shiny]: http://shiny.rstudio.com/
 [kallisto]: http://pachterlab.github.io/kallisto
-
