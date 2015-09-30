@@ -1,0 +1,15 @@
+Package: BiocLyon2015
+Type: Package
+Title: Training Material for Bioconductor Course, IARC, Lyon, France,
+    2015
+Version: 0.0.1
+Authors@R: c(
+    person("Martin", "Morgan", role="cre",
+        email="mtmorgan@fredhutch.org"))
+Description: Vignettes and resources to support a three-day R /
+    Bioconductor training course offered at IARC, Lyon, France,
+    26-28 October 2015.
+Imports: BiocInstaller
+Suggests: BiocStyle, knitr
+License: Artistic-2.0
+VignetteBuilder: knitr
