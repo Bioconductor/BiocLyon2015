@@ -39,14 +39,14 @@ comprehension of high-throughput sequence data using R and
 _Bioconductor_; many other useful software tools are not discussed.  The
 topics and learning objectives to be address are as follows:
 
-- [Introduction to _Bioconductor_](L1-Introduction.html): Overall
+- [Introduction to _Bioconductor_](L1-Introduction.Rmd): Overall
   sequence analysis work flows. Familiarity with _R_. The diversity of
   analysis challenges addressed by _Bioconductor_. The role of
   _Bioconductor_ packages in specific work flow steps. _Bioconductor_
   resources for help and effective use. Primary packages:
   [GenomicRanges][], [SummarizedExperiment][].
 
-- [Sequence Data Representation and Manipulation](L2-Data-Representation.html):
+- [Sequence Data Representation and Manipulation](L2-Data-Representation.Rmd):
   Common genomic file types (FASTA/FASTQ, BED, WIG, GTF, etc) and
   their _Bioconductor_ representation and manipulation. Essential
   _Bioconductor_ data structures (e.g., DNAStringSet,
@@ -56,7 +56,7 @@ topics and learning objectives to be address are as follows:
   [GenomicFeatures][], [GenomicAlignments][], [ShortRead][],
   [Biostrings][].
 
-- [Variant Calling and Annotation](L3-Variants.html): Conceptual
+- [Variant Calling and Annotation](L3-Variants.Rmd): Conceptual
   understanding of variant calling approaches and (primarily
   non-_Bioconductor_) tools. Exploratory approaches to variant calling
   in _Bioconductor_. Working with called variants, e.g., classifying
@@ -64,7 +64,7 @@ topics and learning objectives to be address are as follows:
   variants. Primary packages: [VariantTools][], [r5vc][],
   [VariantAnnotation][], [VariantFiltering][].
 
-- [RNA-Seq Differential Expression](L4-RNASeq.html): _Bioconductor_
+- [RNA-Seq Differential Expression](L4-RNASeq.Rmd): _Bioconductor_
   known-gene RNA-seq differential expression work flow, from aligned
   reads to differential expression of genes. Important statistical
   issues and their resolution. Placing results of differential
@@ -72,13 +72,13 @@ topics and learning objectives to be address are as follows:
   novel-gene and transcript-level RNAseq differential expression
   analysis. Primary packages: [DESeq2][], [edgeR][].
 
-- [Working with Large Data](L5-Large-Data.html): Overcoming common
+- [Working with Large Data](L5-Large-Data.Rmd): Overcoming common
   pitfalls in memory management and computational throughput when
   writing R code. Adopting restriction, iteration, and parallel
   evaluation strategies for working with large data. Primary packages:
   [BiocParallel][], [GenomicFiles][].
 
-- [Data Visualization](L6-Visualization.html): Challenges to
+- [Data Visualization](L6-Visualization.Rmd): Challenges to
   visualizing genomic data. Opportunities for familiar and novel
   genomic visualizations in _Bioconductor_. Approaches to interactive
   visualization with shiny. Adopting strategies for reproducible and
