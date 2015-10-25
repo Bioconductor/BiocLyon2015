@@ -1,5 +1,8 @@
 ---
 title: "L3 -- Variant Calling and Annotation"
+author: "Martin Morgan<br />
+         Roswell Park Cancer Institute, Buffalo, NY<br />
+         26-28 October, 2015"
 output:
   BiocStyle::html_document:
     toc: true
@@ -20,15 +23,11 @@ knitr::opts_chunk$set(
 ```{r setup, echo=FALSE}
 suppressPackageStartupMessages({
     library(VariantAnnotation)
-    # library(VariantFiltering)
+    library(VariantFiltering)
     # library(VariantTools)
     # library(r5vc)
 })
 ```
-
-Author: Martin Morgan
-  (<a href="mailto:mtmorgan@fhcrc.org">mtmorgan@fhcrc.org</a>)<br />
-Date: 26-28 October, 2015<br />
 
 - Conceptual understanding of variant calling approaches and
   (primarily non-Bioconductor) tools. Exploratory approaches to
@@ -36,3 +35,203 @@ Date: 26-28 October, 2015<br />
   classifying variants to genomic regions of interest and predicting
   effects of variants. Primary packages: [VariantTools][], [r5vc][],
   [VariantAnnotation][], [VariantFiltering][].
+
+
+# Presentation: Variant Calling Work Flows
+
+# Called Variants
+
+Classes -- GenomicRanges-like behavior
+
+- VCF -- 'wide'
+- VRanges -- 'tall'
+
+Functions and methods
+
+- I/O and filtering: `readVcf()`, `readGeno()`, `readInfo()`,
+  `readGT()`, `writeVcf()`, `filterVcf()`
+- Annotation: `locateVariants()` (variants overlapping ranges),
+  `predictCoding()`, `summarizeVariants()`
+- SNPs: `genotypeToSnpMatrix()`, `snpSummary()`
+
+Related packages
+
+- [ensemblVEP][] 
+    - Forward variants to Ensembl Variant Effect Predictor
+- [VariantTools][], [h5vc][]
+    - Call variants
+- [VariantFiltering][]
+    - Filter variants using criteria such as coding consequence, MAF,
+       ..., inheritance model
+
+Reference
+
+- Obenchain, V, Lawrence, M, Carey, V, Gogarten, S, Shannon, P, and
+  Morgan, M. VariantAnnotation: a Bioconductor package for exploration
+  and annotation of genetic variants. Bioinformatics, first published
+  online March 28, 2014
+  [doi:10.1093/bioinformatics/btu168](http://bioinformatics.oxfordjournals.org/content/early/2014/04/21/bioinformatics.btu168)
+
+
+## Interactivities: exploring VCF files with _VariantAnnotation_
+
+### What is a VCF file?
+
+
+
+### Input
+
+Headers
+
+Data
+
+Restrictions
+
+Chunks
+
+- Read in chunks to limit memory consumption while allowing relatively
+  efficient 'vectorized' computation.
+  
+    ```{r}
+    fl <- system.file("extdata", "chr22.vcf.gz", package="VariantAnnotation")
+    dim(readVcf(fl, "hg19"))     # 10376 records
+
+    vcf <- open(VcfFile(fl, yieldSize=10000))
+    dim(readVcf(vcf, "hg19"))    # 10000 records...
+    dim(readVcf(vcf, "hg19"))    # 376 records...
+    dim(readVcf(vcf, "hg19"))    # 0 records, all done
+    ```
+
+### Annotation
+
+Built-in
+
+- Read variants from a VCF file, and annotate with respect to a known
+  gene model
+  
+```{r vcf, message=FALSE}
+## input variants
+library(VariantAnnotation)
+fl <- system.file("extdata", "chr22.vcf.gz", package="VariantAnnotation")
+vcf <- readVcf(fl, "hg19")
+seqlevels(vcf) <- "chr22"
+## known gene model
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+coding <- locateVariants(rowRanges(vcf),
+    TxDb.Hsapiens.UCSC.hg19.knownGene,
+    CodingVariants())
+head(coding)
+```
+
+Via additional resources
+
+- [ensemblVEP][]
+- SIFT, PolyPhen
+- [myvariant][]
+
+### Filtering
+
+VCF files can be large, and it can be difficult to precisely formulate
+an appropriate restriction to efficiently limit the amount of
+input. One strategy is to filter the VCF to contain a subset of
+variants that are likely to be of interest to you. The
+[VariantAnnotation][] package offers two types of filters, andthese
+can be combined.
+
+#### Prefilters
+
+Prefilters are conceptually very simple.  They are functions which
+will be called with a single argument, a vector of character strings,
+each of which is an _unparsed_ variant call line, as read from the
+input VCF file.  We use `grepl()` to return a logical vector equal in
+length to the incoming vector of unparsed VCF lines.  Each prefilter
+and filter is called repeatedly, with `yieldSize` lines supplied on
+each invocation.  `filterVcf()` calls these functions repeatedly until
+the input file is exhausted.
+
+Notice how the logic of these prefilters is very simple, using
+`grepl()` to do fast, simple, fixed pattern matching:
+
+```{r}
+isGermlinePrefilter <- function(x) {
+    grepl("Germline", x, fixed=TRUE)
+}
+
+notInDbsnpPrefilter <- function(x) {
+    !(grepl("dbsnp", x, fixed=TRUE))
+}
+```
+
+#### Filters
+
+Filters are more sophisticated than prefilters in that they assess
+_parsed_ variant call lines for possible inclusion.  Such parsing is
+intrinsically expensive but will be performed only on those lines
+which passed the prefilters.  Therefore it pays to eliminate as many
+lines as possible using prefilters.  Filters are useful when there
+exists detailed criteria for inclusion and exclusion.  This can be
+seen below, especially in the `allelicDepth()` function. Each filter
+must be written to return a logical vector as long as the number of
+rows in the input VCF argument; be sure your filter works with 0-row
+VCF instances.
+
+```{r}
+## We will use isSNV() to filter only SNVs
+
+allelicDepth <- function(x) {
+    ##  ratio of AD of the "alternate allele" for the tumor sample
+    ##  OR "reference allele" for normal samples to total reads for
+    ##  the sample should be greater than some threshold (say 0.1,
+    ##  that is: at least 10% of the sample should have the allele
+    ##  of interest)
+    ad <- geno(x)$AD
+    tumorPct <- ad[,1,2,drop=FALSE] / rowSums(ad[,1,,drop=FALSE])
+    normPct <- ad[,2,1, drop=FALSE] / rowSums(ad[,2,,drop=FALSE])
+    test <- (tumorPct > 0.1) | (normPct > 0.1)
+    as.vector(!is.na(test) & test)
+}
+```
+
+#### _FilterRules_
+
+The `FilterRules()` function allow you to combine a list of filters,
+or of prefilters so that they may be passed as parameters to
+`filterVcf()`.  We use them here to combine the
+`isGermlinePrefilter()` with the `notInDbsnpPrefilter()`, and the
+`isSNV()` with the `AD` filter.
+
+```{r}
+prefilters <- FilterRules(list(germline=isGermlinePrefilter, 
+                               dbsnp=notInDbsnpPrefilter))
+filters <- FilterRules(list(isSNV=isSNV, AD=allelicDepth))
+```
+
+We then run the filter by identifying the path to the VCF file and
+it's index, specifying the destination, and indicating the chunk size
+to process using a `VcfFile()` with `yieldSize`.
+
+```
+file.gz     <- system.file("extdata", "chr7-sub.vcf.gz", 
+                           package="VariantAnnotation")
+file.gz.tbi <- system.file("extdata", "chr7-sub.vcf.gz.tbi", 
+                           package="VariantAnnotation")
+destination.file <- tempfile()
+tabix.file <- VcfFile(file.gz, yieldSize=10000)
+filterVcf(tabix.file,  "hg19", destination.file,
+          prefilters=prefilters, filters=filters, verbose=TRUE)
+```
+
+### Integration with _AnnotationHub_
+
+
+
+## Lab: _VariantFiltering_
+
+For this lab, please work through the excellent [vignette] in the
+[VariantFiltering][] package.
+
+[VariantAnnotation]: https://bioconductor.org/packages/VariantFiltering
+[ensemblVEP]: https://bioconductor.org/packages/ensemblVEP
+[myvariant]: https://bioconductor.org/packages/myvariant
+[VariantFiltering]: https://bioconductor.org/packages/VariantFiltering
+[vignette]: http://bioconductor.org/packages/3.2/bioc/vignettes/VariantFiltering/inst/doc/usingVariantFiltering.pdf
