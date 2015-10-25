@@ -31,3 +31,329 @@ suppressPackageStartupMessages({
 Author: Martin Morgan
   (<a href="mailto:mtmorgan@fhcrc.org">mtmorgan@fhcrc.org</a>)<br />
 Date: 26-28 October, 2015<br />
+
+- Common genomic file types (FASTA/FASTQ, BED, WIG, GTF, etc) and
+  their _Bioconductor_ representation and manipulation. Essential
+  _Bioconductor_ data structures (e.g., DNAStringSet,
+  GenomicRanges). _Bioconductor_ gene and genome 'annotation'
+  resources. Simple _Bioconductor_ solutions to common bioinformatic
+  tasks. Primary packages: [AnnotationHub][], [rtracklayer][],
+  [GenomicFeatures][], [GenomicAlignments][], [ShortRead][],
+  [Biostrings][].
+
+# Interactivity: bioinformatic files and their representation in _Bioconductor_
+
+# Interactivity: _Bioconductor_ core packages and general-purpose data structures
+
+## Importing and manipulating common file formats
+
+- FASTA: [Biostrings][]
+- FASTQ: [ShortRead][]
+- BAM: [Rsamtools][] / [GenomicAlignments][]
+- BED, GFF / GTF, WIG: [rtracklayer][]
+
+## Annotation
+
+Static packages
+
+- _org.\*_ 
+
+    ```{r}
+    library(org.Hs.eg.db)
+    ```
+
+- _TxDb.\*_
+
+    ```{r}
+    library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+    ```
+
+Web-based resources, e.g., [biomaRt][], [PSICQUIC][], ...
+
+Genome-scale resources via [AnnotationHub][]
+
+## General-purpose data structures
+
+- `Rle`
+
+    ```{r}
+    r <- Rle(c(1, 1, 1, 2, 2))
+    r
+    ```
+
+- `DataFrame` -- like `data.frame()` but can hold any object that has a
+  `length()` and can be subset.
+  
+    ```{r}
+    df = DataFrame(r)
+    df
+    df[2:4,, drop=FALSE]
+    ```
+
+# Lab exercises
+
+## _GenomicAlignments_
+
+The [RNAseqData.HNRNPC.bam.chr14][] package is an example of an
+experiment data package. It contains a subset of BAM files used in a
+gene knock-down experiment, as described in
+`?RNAseqData.HNRNPC.bam.chr14`. Load the package and get the path to
+the BAM files.
+
+```{r}
+library(RNAseqData.HNRNPC.bam.chr14)
+fls = RNAseqData.HNRNPC.bam.chr14_BAMFILES
+basename(fls)
+```
+
+Create `BamFileList()`, basically telling R that these are paths to
+BAM files rather than, say, text files from a spreadsheet.
+
+```{r}
+library(GenomicAlignments)
+bfls = BamFileList(fls)
+bfl = bfls[[1]]
+```
+
+Input and explore the aligments. See `?readGAlignments` and
+`?GAlignments` for details on how to manipulate these objects.
+
+```{r}
+ga = readGAlignments(bfl)
+ga
+table(strand(ga))
+```
+
+Many of the reads have cigar "72M". What does this mean? Can you
+create a subset of reads that do not have this cigar? Interpret some
+of the non-72M cigars. Any hint about what these cigars represent?
+
+```{r}
+tail(sort(table(cigar(ga))))
+ga[cigar(ga) != "72M"]
+```
+
+Use the function `summarizeJunctions()` to identify genomic regions
+that are spanned by reads with complicated cigars. Can you use the
+argument `with.revmap=TRUE` to extract the reads supporting a
+particular (e.g., first) junction?
+
+```{r}
+summarizeJunctions(ga)
+junctions <- summarizeJunctions(ga, with.revmap=TRUE)
+ga[ junctions$revmap[[1]] ]
+```
+
+It is possible to do other actions on BAM files, e.g., calculating the
+'coverage' (reads overlapping each base).
+
+```{r}
+coverage(bfl)$chr14
+```
+
+## Annotation and _GenomicFeatures_
+
+Load the org package for _Homo sapiens_.
+
+```{r}
+library(org.Hs.eg.db)
+```
+
+Use `select()` to annotate the HNRNPC gene symbol with its Entrez
+identifier and less formal gene name. Create a map between SYMBOL and
+ENTREZID using `mapIds()`.
+
+```{r}
+select(org.Hs.eg.db, "HNRNPC", c("ENTREZID", "GENENAME"), "SYMBOL")
+sym2eg <- mapIds(org.Hs.eg.db, "HNRNPC", "ENTREZID", "SYMBOL")
+```
+
+Load the TxDb package for the UCSC hg19 knownGene track
+
+```{r}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+```
+
+Extract coordinates of genes, and of exons grouped by gene for the
+HNRNPC gene.
+
+```{r}
+gns <- genes(txdb)
+exonsBy(txdb, "gene")[sym2eg]
+```
+
+Use the gene coordinates to query the BAM file for a specific genomic
+region; see `?ScanBamParam()` for other ways of restricting data
+input.
+
+```{r}
+library(Rsamtools)
+param <- ScanBamParam(which=gns[sym2eg])
+readGAlignments(bfl, param=param)
+```
+
+## _SummarizedExperiment_
+
+The [airway][] experiment data package summarizes an RNA-seq
+experiment investigating human smooth-muscle airway cell lines treated
+with dexamethasone. Load the library and data set.
+
+```{r}
+library(airway)
+data(airway)
+airway
+```
+
+`airway` is an example of the _SummarizedExperiment_ class. Explore
+its `assay()` (the matrix of counts of reads overlapping genomic
+regions of interest in each sample), `colData()` (a description of
+each sample), and `rowRanges()` (a description of each region of
+interest, here ENSEMBL genes.
+
+```{r}
+x <- assay(airway)
+class(x)
+dim(x)
+head(x)
+colData(airway)
+rowRanges(airway)
+```
+
+The row names are Ensembl gene identifiers. Use `mapIds()` to map from
+these to gene symbols.
+
+```{r}
+symid <- mapIds(org.Hs.eg.db, rownames(airway), "SYMBOL", "ENSEMBL")
+```
+
+Add the gene symbols to the summarized experiment object.
+
+```{r}
+mcols(rowRanges(airway))$symid <- symid
+```
+
+It's easy to subset a _SummarizedExperiment_ on rows, columns and
+assays, e.g., retaining just those samples in the `trt` level of the
+`dex` factor. Accessing elements of the column data is common, so
+there is a short-cut.
+
+```{r}
+cidx <- colData(airway)$dex %in% "trt"
+airway[, cidx]
+## shortcut
+airway[, airway$dex %in% "trt"]
+```
+
+It's also easy to perform range-based operations on
+`SummarizedExperiment` objects, e.g., querying for range of chromosome
+14 and then subsetting to contain only genes on this chromosome. Range
+operations on rows are very common, so there are shortcuts here, too.
+
+```{r}
+chr14 <- as(seqinfo(rowRanges(airway)), "GRanges")["14"]
+ridx <- rowRanges(airway) %over% chr14
+airway[ridx,]
+## shortcut
+chr14 <- as(seqinfo(airway), "GRanges")["14"]
+airway[airway %over% chr14,]
+```
+
+Use the `assay()` and `rowSums()` function to remove all rows from the
+`airway` object that have 0 reads overlapping all samples. Summarize
+the library size (column sums of `assay()`) and plot a histogram of
+the distribution of reads per feature of interest.
+
+## _GenomicRanges_
+
+## _AnnotationHub_
+
+The [Roadmap Epigenomics Project][] generated genome-wide maps of
+regulatory marks across a number of cell lines. 
+
+Retrieve the Epigenome Roadmap table from [AnnotationHub][]...
+
+```{r}
+library(AnnotationHub)
+hub <- AnnotationHub()
+query(hub, c("epigenome", "metadata"))
+meta <- hub[["AH41830"]]
+```
+
+Explore the metadata to identify a cell line of interest to you; see
+also the [metadata][] spreadsheet version of the data made available
+by the Epigenome roadmap project.
+
+```{r}
+table(meta$ANATOMY)
+meta[meta$ANATOMY == "LIVER",]
+```
+
+Use the 'EID' to query for and retrieve the 'mnemonic' file
+summarizing chromatin state
+
+```{r}
+query(hub, c("E118", "mnemonic"))
+E118 <- hub[["AH46971"]]
+E118
+```
+
+Explore the object, e.g., tabulating the different chromatin state
+classifications (in the `name` column). Subset the object to return,
+e.g., just those regions marked as 'Heterochromatin'
+
+```{r}
+table(E118$name)
+E118[E118$name %in% "Heterochromatin"]
+```
+
+Can you, using a TxDb package and the `genes()` and
+`subsetByOverlaps()` functions, determine how many genes overlap
+heterochromatic states, or the genes `nearest()` each enhancer?
+
+## _biomaRt_
+
+Visit the [biomart website][] and figure out how to browse data to
+retreive, e.g., genes on chromosmes 21 and 22. You'll need to browse
+to the ensembl mart, _Homo spaiens_ data set, establish filters for
+chromosomes 20 and 21, and then specify that you'd like the Ensembl
+gene id attribute returned.
+
+Now do the same process in [biomaRt][]:
+
+```{r biomart, eval=FALSE}
+library(biomaRt)
+head(listMarts(), 3)                      ## list marts
+head(listDatasets(useMart("ensembl")), 3) ## mart datasets
+ensembl <-                                ## fully specified mart
+    useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+
+head(listFilters(ensembl), 3)             ## filters
+myFilter <- "chromosome_name"
+substr(filterOptions(myFilter, ensembl), 1, 50) ## return values
+myValues <- c("21", "22")
+head(listAttributes(ensembl), 3)          ## attributes
+myAttributes <- c("ensembl_gene_id","chromosome_name")
+
+## assemble and query the mart
+res <- getBM(attributes =  myAttributes, filters =  myFilter,
+             values =  myValues, mart = ensembl)
+```
+
+
+[Roadmap Epigenomics Project]: http://egg2.wustl.edu/roadmap/web_portal/
+[metadata]: https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15
+[biomart website]: http://biomart.org
+
+[AnnotationHub]: https://bioconductor.org/packages/AnnotationHub
+[Biostrings]: https://bioconductor.org/packages/Biostrings
+[GenomicAlignments]: https://bioconductor.org/packages/GenomicAlignments
+[GenomicFeatures]: https://bioconductor.org/packages/GenomicFeatures
+[GenomicRanges]: https://bioconductor.org/packages/GenomicRanges
+[PSICQUIC]: https://bioconductor.org/packages/PSICQUIC
+[Rsamtools]: https://bioconductor.org/packages/Rsamtools
+[ShortRead]: https://bioconductor.org/packages/ShortRead
+[biomaRt]: https://bioconductor.org/packages/biomaRt
+[rtracklayer]: https://bioconductor.org/packages/rtracklayer
+[RNAseqData.HNRNPC.bam.chr14]: https://bioconductor.org/packages/RNAseqData.HNRNPC.bam.chr14
+[airway]: https://bioconductor.org/packages/airway

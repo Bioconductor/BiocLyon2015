@@ -27,3 +27,10 @@ suppressPackageStartupMessages({
 Author: Martin Morgan
   (<a href="mailto:mtmorgan@fhcrc.org">mtmorgan@fhcrc.org</a>)<br />
 Date: 26-28 October, 2015<br />
+
+- Bioconductor known-gene RNA-seq differential expression work flow,
+  from aligned reads to differential expression of genes. Important
+  statistical issues and their resolution. Placing results of
+  differential expression analysis into biological context. Brief
+  discussion of novel-gene and transcript-level RNAseq differential
+  expression analysis. Primary packages: [DESeq2][], [edgeR][].

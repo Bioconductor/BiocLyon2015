@@ -27,3 +27,37 @@ suppressPackageStartupMessages({
 Author: Martin Morgan
   (<a href="mailto:mtmorgan@fhcrc.org">mtmorgan@fhcrc.org</a>)<br />
 Date: 26-28 October, 2015<br />
+
+- Familiarity with _R_. The diversity of analysis challenges addressed
+  by _Bioconductor_. The role of _Bioconductor_ packages in specific
+  work flow steps. _Bioconductor_ resources for help and effective
+  use. Primary packages: [GenomicRanges][], [SummarizedExperiment][].
+
+# Interactivity / lecture: Sequence analysis work flows
+
+# _R_ 
+
+- vectors, classes, and methods
+- help!
+
+## Lab exercise: common data transformations
+
+# _Bioconductor_
+
+## Presentation: project tour
+
+- [biocViews][]
+    - Types of _Bioconductor_ packages: software, annotation, experiment data
+- Landing pages
+- Support, course material, and other resources
+
+## Interactivity / lecture: example _Bioconductor_ packages
+
+- [Biostrings][] and phiX174
+- [GenomicRanges][]
+- [SummarizedExperiment][]
+
+[biocViews]: https://bioconductor.org/packages/
+[Biostrings]: https://bioconductor.org/packages/Biostrings
+[GenomicRanges]: https://bioconductor.org/packages/GenomicRanges
+[SummarizedExperiment]: https://bioconductor.org/packages/SummarizedExperiment

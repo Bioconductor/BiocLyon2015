@@ -27,3 +27,8 @@ suppressPackageStartupMessages({
 Author: Martin Morgan
   (<a href="mailto:mtmorgan@fhcrc.org">mtmorgan@fhcrc.org</a>)<br />
 Date: 26-28 October, 2015<br />
+
+- Overcoming common pitfalls in memory management and computational
+  throughput when writing R code. Adopting restriction, iteration, and
+  parallel evaluation strategies for working with large data. Primary
+  packages: [BiocParallel][], [GenomicFiles][].

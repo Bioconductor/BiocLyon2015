@@ -1,5 +1,5 @@
 SOURCES = $(shell ls *Rmd)
-LTXSOURCES = $(shell ls *Rnw)
+# LTXSOURCES = $(shell ls *Rnw)
 
 %.pdf: %.tex
 	@echo "texi2dvi --pdf $<"

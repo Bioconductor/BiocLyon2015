@@ -29,3 +29,10 @@ suppressPackageStartupMessages({
 Author: Martin Morgan
   (<a href="mailto:mtmorgan@fhcrc.org">mtmorgan@fhcrc.org</a>)<br />
 Date: 26-28 October, 2015<br />
+
+- Conceptual understanding of variant calling approaches and
+  (primarily non-Bioconductor) tools. Exploratory approaches to
+  variant calling in Bioconductor. Working with called variants, e.g.,
+  classifying variants to genomic regions of interest and predicting
+  effects of variants. Primary packages: [VariantTools][], [r5vc][],
+  [VariantAnnotation][], [VariantFiltering][].

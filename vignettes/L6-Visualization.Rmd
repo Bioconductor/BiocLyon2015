@@ -29,3 +29,22 @@ suppressPackageStartupMessages({
 Author: Martin Morgan
   (<a href="mailto:mtmorgan@fhcrc.org">mtmorgan@fhcrc.org</a>)<br />
 Date: 26-28 October, 2015<br />
+
+- Challenges to visualizing genomic data. Opportunities for familiar
+  and novel genomic visualizations in Bioconductor. Approaches to
+  interactive visualization with shiny. Adopting strategies for
+  reproducible and collaborative research. Primary packages: [Gviz][],
+  [ReportingTools][], [shiny][], ([ggbio][]).
+
+
+# Interactivity: stick figures
+
+Create a fun shiny application
+
+Advanced: implement _BAMSpector_ to explore BAM files in the context
+of known gene annotation.
+
+# Lab: _ReportingTools_
+
+Transform the RNA-seq differential expression work flow into a
+_ReportingTools_ report.

@@ -36,35 +36,35 @@ stopifnot(
 
 This course provides a broad introduction to the analysis and
 comprehension of high-throughput sequence data using R and
-Bioconductor; many other useful software tools are not discussed.  The
+_Bioconductor_; many other useful software tools are not discussed.  The
 topics and learning objectives to be address are as follows:
 
-- [Introduction to Bioconductor](L1-Introduction.html): Familiarity
-  with overall sequence analysis work flows. The diversity of analysis
-  challenges addressed by Bioconductor. The role of Bioconductor
-  packages in specific work flow steps. Bioconductor resources for
-  help and effective use. Primary packages: [GenomicRanges][],
-  [SummarizedExperiment][].
+- [Introduction to _Bioconductor_](L1-Introduction.html): Overall
+  sequence analysis work flows. Familiarity with _R_. The diversity of
+  analysis challenges addressed by _Bioconductor_. The role of
+  _Bioconductor_ packages in specific work flow steps. _Bioconductor_
+  resources for help and effective use. Primary packages:
+  [GenomicRanges][], [SummarizedExperiment][].
 
 - [Sequence Data Representation and Manipulation](L2-Data-Representation.html):
   Common genomic file types (FASTA/FASTQ, BED, WIG, GTF, etc) and
-  their Bioconductor representation and manipulation. Essential
-  Bioconductor data structures (e.g., DNAStringSet,
-  GenomicRanges). Bioconductor gene and genome 'annotation'
-  resources. Simple Bioconductor solutions to common bioinformatic
+  their _Bioconductor_ representation and manipulation. Essential
+  _Bioconductor_ data structures (e.g., DNAStringSet,
+  GenomicRanges). _Bioconductor_ gene and genome 'annotation'
+  resources. Simple _Bioconductor_ solutions to common bioinformatic
   tasks. Primary packages: [AnnotationHub][], [rtracklayer][],
   [GenomicFeatures][], [GenomicAlignments][], [ShortRead][],
   [Biostrings][].
 
 - [Variant Calling and Annotation](L3-Variants.html): Conceptual
   understanding of variant calling approaches and (primarily
-  non-Bioconductor) tools. Exploratory approaches to variant calling
-  in Bioconductor. Working with called variants, e.g., classifying
+  non-_Bioconductor_) tools. Exploratory approaches to variant calling
+  in _Bioconductor_. Working with called variants, e.g., classifying
   variants to genomic regions of interest and predicting effects of
   variants. Primary packages: [VariantTools][], [r5vc][],
   [VariantAnnotation][], [VariantFiltering][].
 
-- [RNA-Seq Differential Expression](L4-RNASeq.html): Bioconductor
+- [RNA-Seq Differential Expression](L4-RNASeq.html): _Bioconductor_
   known-gene RNA-seq differential expression work flow, from aligned
   reads to differential expression of genes. Important statistical
   issues and their resolution. Placing results of differential
@@ -80,10 +80,20 @@ topics and learning objectives to be address are as follows:
 
 - [Data Visualization](L6-Visualization.html): Challenges to
   visualizing genomic data. Opportunities for familiar and novel
-  genomic visualizations in Bioconductor. Approaches to interactive
+  genomic visualizations in _Bioconductor_. Approaches to interactive
   visualization with shiny. Adopting strategies for reproducible and
   collaborative research. Primary packages: [Gviz][],
   [ReportingTools][], [shiny][], ([ggbio][]).
+
+We'll cover this material using several different approaches:
+
+- _Presentation_ in more-or-less traditional lectures
+- _Interactivities_ where we work through material together
+- _Lab exercises_ where you work alone or in small groups to complete
+  a task.
+
+In addition, I hope that we can have short (5-10 minute) presentations
+from course participants about their own research.
 
 [AnnotationHub]: http://bioconductor.org/packages/AnnotationHub
 [BiocParallel]: http://bioconductor.org/packages/BiocParallel
