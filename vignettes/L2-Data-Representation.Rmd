@@ -1,5 +1,8 @@
 ---
 title: "L2 -- Sequence Data Representation and Manipulation"
+author: "Martin Morgan<br />
+         Roswell Park Cancer Institute, Buffalo, NY<br />
+         26-28 October, 2015"
 output:
   BiocStyle::html_document:
     toc: true
@@ -28,10 +31,6 @@ suppressPackageStartupMessages({
 })
 ```
 
-Author: Martin Morgan
-  (<a href="mailto:mtmorgan@fhcrc.org">mtmorgan@fhcrc.org</a>)<br />
-Date: 26-28 October, 2015<br />
-
 - Common genomic file types (FASTA/FASTQ, BED, WIG, GTF, etc) and
   their _Bioconductor_ representation and manipulation. Essential
   _Bioconductor_ data structures (e.g., DNAStringSet,
@@ -43,52 +42,241 @@ Date: 26-28 October, 2015<br />
 
 # Interactivity: bioinformatic files and their representation in _Bioconductor_
 
-# Interactivity: _Bioconductor_ core packages and general-purpose data structures
-
-## Importing and manipulating common file formats
-
 - FASTA: [Biostrings][]
 - FASTQ: [ShortRead][]
 - BAM: [Rsamtools][] / [GenomicAlignments][]
 - BED, GFF / GTF, WIG: [rtracklayer][]
+- VCF: [VariantAnnotation][]
 
-## Annotation
+## DNA / amino acid sequences: FASTA files
+
+Input & manipulation: [Biostrings][]
+
+    >NM_078863_up_2000_chr2L_16764737_f chr2L:16764737-16766736
+    gttggtggcccaccagtgccaaaatacacaagaagaagaaacagcatctt
+    gacactaaaatgcaaaaattgctttgcgtcaatgactcaaaacgaaaatg
+    ...
+    atgggtatcaagttgccccgtataaaaggcaagtttaccggttgcacggt
+    >NM_001201794_up_2000_chr2L_8382455_f chr2L:8382455-8384454
+    ttatttatgtaggcgcccgttcccgcagccaaagcactcagaattccggg
+    cgtgtagcgcaacgaccatctacaaggcaatattttgatcgcttgttagg
+    ...
+
+Whole genomes: `2bit` and `.fa` formats: [rtracklayer][],
+[Rsamtools][]; [BSgenome][]
+
+## Reads: FASTQ files
+
+Input & manipulation: [ShortRead][] `readFastq()`, `FastqStreamer()`,
+`FastqSampler()`
+
+    @ERR127302.1703 HWI-EAS350_0441:1:1:1460:19184#0/1
+    CCTGAGTGAAGCTGATCTTGATCTACGAAGAGAGATAGATCTTGATCGTCGAGGAGATGCTGACCTTGACCT
+    +
+    HHGHHGHHHHHHHHDGG<GDGGE@GDGGD<?B8??ADAD<BE@EE8EGDGA3CB85*,77@>>CE?=896=:
+    @ERR127302.1704 HWI-EAS350_0441:1:1:1460:16861#0/1
+    GCGGTATGCTGGAAGGTGCTCGAATGGAGAGCGCCAGCGCCCCGGCGCTGAGCCGCAGCCTCAGGTCCGCCC
+    +
+    DE?DD>ED4>EEE>DE8EEEDE8B?EB<@3;BA79?,881B?@73;1?########################
+        
+- Quality scores: 'phred-like', encoded. See
+  [wikipedia](http://en.wikipedia.org/wiki/FASTQ_format#Encoding)
+
+## Aligned reads: BAM files (e.g., ERR127306_chr14.bam)
+
+Input & manipulation: 'low-level' [Rsamtools][], `scanBam()`,
+`BamFile()`; 'high-level' [GenomicAlignments][]
+
+- Header
+
+        @HD     VN:1.0  SO:coordinate
+        @SQ     SN:chr1 LN:249250621
+        @SQ     SN:chr10        LN:135534747
+        @SQ     SN:chr11        LN:135006516
+        ...
+        @SQ     SN:chrY LN:59373566
+        @PG     ID:TopHat       VN:2.0.8b       CL:/home/hpages/tophat-2.0.8b.Linux_x86_64/tophat --mate-inner-dist 150 --solexa-quals --max-multihits 5 --no-discordant --no-mixed --coverage-search --microexon-search --library-type fr-unstranded --num-threads 2 --output-dir tophat2_out/ERR127306 /home/hpages/bowtie2-2.1.0/indexes/hg19 fastq/ERR127306_1.fastq fastq/ERR127306_2.fastq
+  
+- Alignments: ID, flag, alignment and mate
+  
+        ERR127306.7941162       403     chr14   19653689        3       72M             =       19652348        -1413  ...
+        ERR127306.22648137      145     chr14   19653692        1       72M             =       19650044        -3720  ...
+        ERR127306.933914        339     chr14   19653707        1       66M120N6M       =       19653686        -213   ...
+        ERR127306.11052450      83      chr14   19653707        3       66M120N6M       =       19652348        -1551  ...
+        ERR127306.24611331      147     chr14   19653708        1       65M120N7M       =       19653675        -225   ...
+        ERR127306.2698854       419     chr14   19653717        0       56M120N16M      =       19653935        290    ...
+        ERR127306.2698854       163     chr14   19653717        0       56M120N16M      =       19653935        2019   ...
+            
+- Alignments: sequence and quality
+        
+        ... GAATTGATCAGTCTCATCTGAGAGTAACTTTGTACCCATCACTGATTCCTTCTGAGACTGCCTCCACTTCCC        *'%%%%%#&&%''#'&%%%)&&%%$%%'%%'&*****$))$)'')'%)))&)%%%%$'%%%%&"))'')%))
+        ... TTGATCAGTCTCATCTGAGAGTAACTTTGTACCCATCACTGATTCCTTCTGAGACTGCCTCCACTTCCCCAG        '**)****)*'*&*********('&)****&***(**')))())%)))&)))*')&***********)****
+        ... TGAGAGTAACTTTGTACCCATCACTGATTCCTTCTGAGACTGCCTCCACTTCCCCAGCAGCCTCTGGTTTCT        '******&%)&)))&")')'')'*((******&)&'')'))$))'')&))$)**&&****************
+        ... TGAGAGTAACTTTGTACCCATCACTGATTCCTTCTGAGACTGCCTCCACTTCCCCAGCAGCCTCTGGTTTCT        ##&&(#')$')'%&&#)%$#$%"%###&!%))'%%''%'))&))#)&%((%())))%)%)))%*********
+        ... GAGAGTAACTTTGTACCCATCACTGATTCCTTCTGAGACTGCCTCCACTTCCCCAGCAGCCTCTGGTTTCTT        )&$'$'$%!&&%&&#!'%'))%''&%'&))))''$""'%'%&%'#'%'"!'')#&)))))%$)%)&'"')))
+        ... TTTGTACCCATCACTGATTCCTTCTGAGACTGCCTCCACTTCCCCAGCAGCCTCTGGTTTCTTCATGTGGCT        ++++++++++++++++++++++++++++++++++++++*++++++**++++**+**''**+*+*'*)))*)#
+        ... TTTGTACCCATCACTGATTCCTTCTGAGACTGCCTCCACTTCCCCAGCAGCCTCTGGTTTCTTCATGTGGCT        ++++++++++++++++++++++++++++++++++++++*++++++**++++**+**''**+*+*'*)))*)#
+        
+- Alignments: Tags
+
+        ... AS:i:0  XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:0  MD:Z:72 YT:Z:UU NH:i:2  CC:Z:chr22      CP:i:16189276   HI:i:0
+        ... AS:i:0  XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:0  MD:Z:72 YT:Z:UU NH:i:3  CC:Z:=  CP:i:19921600   HI:i:0
+        ... AS:i:0  XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:4  MD:Z:72 YT:Z:UU XS:A:+  NH:i:3  CC:Z:=  CP:i:19921465   HI:i:0
+        ... AS:i:0  XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:4  MD:Z:72 YT:Z:UU XS:A:+  NH:i:2  CC:Z:chr22      CP:i:16189138   HI:i:0
+        ... AS:i:0  XN:i:0  XM:i:0  XO:i:0  XG:i:0  NM:i:5  MD:Z:72 YT:Z:UU XS:A:+  NH:i:3  CC:Z:=  CP:i:19921464   HI:i:0
+        ... AS:i:0  XM:i:0  XO:i:0  XG:i:0  MD:Z:72 NM:i:0  XS:A:+  NH:i:5  CC:Z:=  CP:i:19653717   HI:i:0
+        ... AS:i:0  XM:i:0  XO:i:0  XG:i:0  MD:Z:72 NM:i:0  XS:A:+  NH:i:5  CC:Z:=  CP:i:19921455   HI:i:1
+
+## Called variants: VCF files
+
+Input and manipulation: [VariantAnnotation][] `readVcf()`,
+`readInfo()`, `readGeno()` selectively with `ScanVcfParam()`.
+
+- Header
+
+          ##fileformat=VCFv4.2
+          ##fileDate=20090805
+          ##source=myImputationProgramV3.1
+          ##reference=file:///seq/references/1000GenomesPilot-NCBI36.fasta
+          ##contig=<ID=20,length=62435964,assembly=B36,md5=f126cdf8a6e0c7f379d618ff66beb2da,species="Homo sapiens",taxonomy=x>
+          ##phasing=partial
+          ##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+          ##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency">
+          ...
+          ##FILTER=<ID=q10,Description="Quality below 10">
+          ##FILTER=<ID=s50,Description="Less than 50% of samples have data">
+          ...
+          ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+          ##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+          
+- Location
+
+          #CHROM POS     ID        REF    ALT     QUAL FILTER ...
+          20     14370   rs6054257 G      A       29   PASS   ...
+          20     17330   .         T      A       3    q10    ...
+          20     1110696 rs6040355 A      G,T     67   PASS   ...
+          20     1230237 .         T      .       47   PASS   ...
+          20     1234567 microsat1 GTC    G,GTCT  50   PASS   ...
+          
+- Variant INFO
+
+          #CHROM POS     ...	INFO                              ...
+          20     14370   ...	NS=3;DP=14;AF=0.5;DB;H2           ...
+          20     17330   ...	NS=3;DP=11;AF=0.017               ...
+          20     1110696 ...	NS=2;DP=10;AF=0.333,0.667;AA=T;DB ...
+          20     1230237 ...	NS=3;DP=13;AA=T                   ...
+          20     1234567 ...	NS=3;DP=9;AA=G                    ...
+    
+- Genotype FORMAT and samples
+
+          ... POS     ...  FORMAT      NA00001        NA00002        NA00003
+          ... 14370   ...  GT:GQ:DP:HQ 0|0:48:1:51,51 1|0:48:8:51,51 1/1:43:5:.,.
+          ... 17330   ...  GT:GQ:DP:HQ 0|0:49:3:58,50 0|1:3:5:65,3   0/0:41:3
+          ... 1110696 ...  GT:GQ:DP:HQ 1|2:21:6:23,27 2|1:2:0:18,2   2/2:35:4
+          ... 1230237 ...  GT:GQ:DP:HQ 0|0:54:7:56,60 0|0:48:4:51,51 0/0:61:2
+          ... 1234567 ...  GT:GQ:DP    0/1:35:4       0/2:17:2       1/1:40:3
+            
+## Genome annotations: BED, WIG, GTF, etc. files
+
+Input: [rtracklayer][] `import()`
+
+- BED: range-based annotation (see
+  http://genome.ucsc.edu/FAQ/FAQformat.html for definition of this and
+  related formats)
+- WIG / bigWig: dense, continuous-valued data
+- GTF: gene model
+
+  - Component coordinates
+  
+              7   protein_coding  gene        27221129    27224842    .   -   . ...
+              ...
+              7   protein_coding  transcript  27221134    27224835    .   -   . ...
+              7   protein_coding  exon        27224055    27224835    .   -   . ...
+              7   protein_coding  CDS         27224055    27224763    .   -   0 ...
+              7   protein_coding  start_codon 27224761    27224763    .   -   0 ...
+              7   protein_coding  exon        27221134    27222647    .   -   . ...
+              7   protein_coding  CDS         27222418    27222647    .   -   2 ...
+              7   protein_coding  stop_codon  27222415    27222417    .   -   0 ...
+              7   protein_coding  UTR         27224764    27224835    .   -   . ...
+              7   protein_coding  UTR         27221134    27222414    .   -   . ...
+      
+  - Annotations
+
+              gene_id "ENSG00000005073"; gene_name "HOXA11"; gene_source "ensembl_havana"; gene_biotype "protein_coding";
+              ...
+              ... transcript_id "ENST00000006015"; transcript_name "HOXA11-001"; transcript_source "ensembl_havana"; tag "CCDS"; ccds_id "CCDS5411";
+              ... exon_number "1"; exon_id "ENSE00001147062";
+              ... exon_number "1"; protein_id "ENSP00000006015";
+              ... exon_number "1";
+              ... exon_number "2"; exon_id "ENSE00002099557";
+              ... exon_number "2"; protein_id "ENSP00000006015";
+              ... exon_number "2";
+              ...
+
+# Interactivity: Annotation
+
+- _Bioconductor_ provides extensive access to 'annotation' resources
+  (see the [AnnotationData][] biocViews hierarchy); some interesting
+  examples to explore during this lab include:
+- [biomaRt][], [PSICQUIC][], [KEGGREST][] and other packages for
+  querying on-line resources; each of these have informative vignettes.
+- [AnnotationDbi][] is a cornerstone of the
+  [Annotation Data][AnnotationData] packages provided by Bioconductor.
+    - **org** packages (e.g., [org.Hs.eg.db][]) contain maps between
+      different gene identifiers, e.g., ENTREZ and SYMBOL. The basic
+      interface to these packages is described on the help page `?select`
+    - **TxDb** packages (e.g., [TxDb.Hsapiens.UCSC.hg19.knownGene][])
+      contain gene models (exon coordinates, exon / transcript
+      relationships, etc) derived from common sources such as the hg19
+      knownGene track of the UCSC genome browser. These packages can be
+      queried, e.g., as described on the `?exonsBy` page to retrieve all
+      exons grouped by gene or transcript.
+    - **BSgenome** packages (e.g., [BSgenome.Hsapiens.UCSC.hg19][])
+      contain whole genomes of model organisms.
+- [VariantAnnotation][] and [ensemblVEP][] provide access to sequence
+  annotation facilities, e.g., to identify coding variants; see the
+  [Introduction to VariantAnnotation](http://bioconductor.org/packages/release/bioc/vignettes/ShortRead/inst/doc/Overview.pdf)
+  vignette for a brief introduction.
+- Take a quick look at the [annotation work
+  flow](http://bioconductor.org/help/workflows/annotation/annotation/)
+  on the Bioconductor web site.
 
 Static packages
 
-- _org.\*_ 
+- _org.\*_: identifier mappings
+  
+    - `select()`, `columns()`, `keys()`
+    - `mapIds()`
 
     ```{r}
     library(org.Hs.eg.db)
+    org <- org.Hs.eg.db
+    select(org, "BRCA1", c("ENSEMBL", "GENENAME"), "SYMBOL")
     ```
 
-- _TxDb.\*_
-
+- _TxDb.\*_: gene models
+    
+    - `exons()`, `transcripts()`, `genes()`, `promoters()`, ...
+    - `exonsBy()`, `transcriptsBy()`
+    - `select()`, etc.
+    
     ```{r}
     library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+    txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+    promoters(txdb)
     ```
 
-Web-based resources, e.g., [biomaRt][], [PSICQUIC][], ...
+Web-based resources, e.g., [biomaRt][], [PSICQUIC][], [GEOquery][], ...
 
 Genome-scale resources via [AnnotationHub][]
 
-## General-purpose data structures
-
-- `Rle`
-
-    ```{r}
-    r <- Rle(c(1, 1, 1, 2, 2))
-    r
-    ```
-
-- `DataFrame` -- like `data.frame()` but can hold any object that has a
-  `length()` and can be subset.
-  
-    ```{r}
-    df = DataFrame(r)
-    df
-    df[2:4,, drop=FALSE]
-    ```
+```{r}
+library(AnnotationHub)
+hub = AnnotationHub()
+hub
+query(hub, c("ensembl", "81.gtf"))
+hub[["AH48004"]]
+```
 
 # Lab exercises
 
@@ -264,8 +452,6 @@ Use the `assay()` and `rowSums()` function to remove all rows from the
 the library size (column sums of `assay()`) and plot a histogram of
 the distribution of reads per feature of interest.
 
-## _GenomicRanges_
-
 ## _AnnotationHub_
 
 The [Roadmap Epigenomics Project][] generated genome-wide maps of
@@ -345,15 +531,25 @@ res <- getBM(attributes =  myAttributes, filters =  myFilter,
 [metadata]: https://docs.google.com/spreadsheets/d/1yikGx4MsO9Ei36b64yOy9Vb6oPC5IBGlFbYEt-N6gOM/edit#gid=15
 [biomart website]: http://biomart.org
 
+[AnnotationDbi]: https://bioconductor.org/packages/AnnotationDbi
 [AnnotationHub]: https://bioconductor.org/packages/AnnotationHub
+[BSgenome.Hsapiens.UCSC.hg19]: https://bioconductor.org/packages/BSgenome.Hsapiens.UCSC.hg19
+[BSgenome]: https://bioconductor.org/packages/BSgenome
 [Biostrings]: https://bioconductor.org/packages/Biostrings
 [GenomicAlignments]: https://bioconductor.org/packages/GenomicAlignments
 [GenomicFeatures]: https://bioconductor.org/packages/GenomicFeatures
 [GenomicRanges]: https://bioconductor.org/packages/GenomicRanges
+[KEGGREST]: https://bioconductor.org/packages/KEGGREST
 [PSICQUIC]: https://bioconductor.org/packages/PSICQUIC
+[RNAseqData.HNRNPC.bam.chr14]: https://bioconductor.org/packages/RNAseqData.HNRNPC.bam.chr14
 [Rsamtools]: https://bioconductor.org/packages/Rsamtools
 [ShortRead]: https://bioconductor.org/packages/ShortRead
-[biomaRt]: https://bioconductor.org/packages/biomaRt
-[rtracklayer]: https://bioconductor.org/packages/rtracklayer
-[RNAseqData.HNRNPC.bam.chr14]: https://bioconductor.org/packages/RNAseqData.HNRNPC.bam.chr14
+[TxDb.Hsapiens.UCSC.hg19.knownGene]: https://bioconductor.org/packages/TxDb.Hsapiens.UCSC.hg19.knownGene
+[VariantAnnotation]: https://bioconductor.org/packages/VariantAnnotation
 [airway]: https://bioconductor.org/packages/airway
+[biomaRt]: https://bioconductor.org/packages/biomaRt
+[ensemblVEP]: https://bioconductor.org/packages/ensemblVEP
+[org.Hs.eg.db]: https://bioconductor.org/packages/org.Hs.eg.db
+[rtracklayer]: https://bioconductor.org/packages/rtracklayer
+
+[AnnotationData]: http://bioconductor.org/packages/release/BiocViews.html#___AnnotationData
