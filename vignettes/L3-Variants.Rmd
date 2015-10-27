@@ -70,7 +70,7 @@ Key variant calling tools (non-_Bioconductor_)
     - Indel realignment -- aligners often 'solve' indel by introducing
       mismatches; realign by local consensus of reads. Less important
       for newer tools
-    - Base recalibration -- machine learning approach to addressing
+    - [Base recalibration][]-- machine learning approach to addressing
       systematic biases in base quality scores produced by sequencers,
       e.g., sequencer makes single-nucleotide quality assessments, but
       empirical data shows that dinucleotide biases
@@ -78,12 +78,12 @@ Key variant calling tools (non-_Bioconductor_)
 2. Variant discovery
     - sensitivity (minimize false negatives) vs. specifity (minimize
       false positives, esp. failing to reject artifacts). Two steps...
-    - Call variants (maximize sensitivity).
+    - [Call variants][] (maximize sensitivity).
           - Per-sample, followed by joint genotyping across samples.
           - Current state-of-the-art: haplotype _assembly_ in active
             regions (germ-line only)
     - Filter called variants (tune specificity).
-          - Ideal: variant quality score recalibration -- apply
+          - Ideal: [variant quality score recalibration][] -- apply
             machine learning to quality of called variants. Requires
             large callsets (exomes / genomes) and highly curateed
             known variants.
@@ -93,6 +93,10 @@ Key variant calling tools (non-_Bioconductor_)
           - especially _functional_, e.g., location relative to coding
             sequence
     - Evaluation
+
+[Base recalibration]: https://www.broadinstitute.org/gatk/events/slides/1506/GATKwr8-B-3-Base_recalibration.pdf
+[Call variants]: https://www.broadinstitute.org/gatk/events/slides/1506/GATKwr8-D-2-Variant_calling_and_joint_genotyping.pdf
+[variant quality score recalibration]: https://www.broadinstitute.org/gatk/events/slides/1506/GATKwr8-D-3-Variant_recalibration.pdf
 
 ## _Bioconductor_ opportunities
 
