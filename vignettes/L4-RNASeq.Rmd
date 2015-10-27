@@ -37,8 +37,8 @@ suppressPackageStartupMessages({
 
 # Presentation: RNA-seq work flow
 
-Resources: [Anders, CSAMA, 2015][], [Love, CSAMA, 2015][],
-[Huber, CSAMA, 2015][], [Pimentel, YouTube, 2015][]
+Resources: [Anders, CSAMA, 2015][]; [Love, CSAMA, 2015][];
+[Huber, CSAMA, 2015][]; [Pimentel, YouTube, 2015][].
 
 [Anders, CSAMA, 2015]: http://bioconductor.org/help/course-materials/2015/CSAMA2015/lect/L05-deseq2-anders.pdf
 [Pimentel, YouTube, 2015]: https://www.youtube.com/watch?v=ztyjiCCt_lM
@@ -276,10 +276,9 @@ Borrowing information
   or similar ratio, with an underestimate _inflating_ the statistic
   more dramatically than an overestimate deflates the statistic. Hence
   elevated false discovery rate.
-- Under the typical null hypothesis used in microarray or RNA-seq
-  experiments, each gene may respond differently to the treatment
-  (numerator variance) but the overall variability of a gene is
-  the same, at least for genes with similar average expression
+- Under the null hypothesis used in microarray or RNA-seq experiments,
+  the expected overall variability of a gene is the same, at least for
+  genes with similar average expression
 - The strategy is to estimate the denominator variance as the
   between-group variance for the gene, _moderated_ by the average
   between-group variance across all genes.
@@ -344,15 +343,12 @@ Placing differentially expressed regions in context
 
 ## Background
 
-For Review:
-
-- [Overall Workflow](S1-RNASeq-Workflow.html)
-- [Specifying Experimental Design in _R_](S2-RNASeq-Experimental-Design.html)
-
 This lab is derived from:
-[RNA-Seq workflow: gene-level exploratory analysis and differential expression](http://bioconductor.org/help/workflows/rnaseqGene/),
+[RNA-Seq workflow][]: gene-level exploratory analysis and differential expression,
 by Michael Love, Simon Anders, Wolfgang Huber; modified by Martin
 Morgan, October 2015.
+
+[RNA-Seq workflow]: http://bioconductor.org/help/workflows/rnaseqGene/
 
 This lab will walk you through an end-to-end RNA-Seq differential
 expression workflow, using [DESeq2][] along with other _Bioconductor_
