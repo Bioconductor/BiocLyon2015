@@ -1,5 +1,8 @@
 ---
 title: "L6 -- Visualization"
+author: "Martin Morgan<br />
+         Roswell Park Cancer Institute, Buffalo, NY<br />
+         26-28 October, 2015"
 output:
   BiocStyle::html_document:
     toc: true
@@ -17,19 +20,6 @@ knitr::opts_chunk$set(
     cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")))
 ```
 
-```{r setup, echo=FALSE}
-suppressPackageStartupMessages({
-    library(Gviz)
-    library(ReportingTools)
-    library(shiny)
-    library(ggbio)
-})
-```
-
-Author: Martin Morgan
-  (<a href="mailto:mtmorgan@fhcrc.org">mtmorgan@fhcrc.org</a>)<br />
-Date: 26-28 October, 2015<br />
-
 - Challenges to visualizing genomic data. Opportunities for familiar
   and novel genomic visualizations in Bioconductor. Approaches to
   interactive visualization with shiny. Adopting strategies for
@@ -37,7 +27,52 @@ Date: 26-28 October, 2015<br />
   [ReportingTools][], [shiny][], ([ggbio][]).
 
 
-# Interactivity: stick figures
+# _ggplot2_
+
+Augements base graphics; very popular
+
+# _Gviz_
+
+Genomic visualizations
+
+Exercises
+
+(20 minutes) Review section 2 of the [Gviz][] vignette
+
+Visualize a BAM file from [RNAseqData.HNRNPC.bam.chr14][] around the
+HNRNPC gene. Do this by creating an gene region track...
+
+```{r}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+genes <- GeneRegionTrack(TxDb.Hsapiens.UCSC.hg19.knownGene, chromosome="chr14")
+```
+   
+...a data track...
+
+```{r}
+library(RNAseqData.HNRNPC.bam.chr14)
+fl <- RNAseqData.HNRNPC.bam.chr14_BAMFILES[1]
+data <- DataTrack(range=fl, name=names(fl),
+    type="histogram", window= -1,
+    genome="hg19", chromosome="chr14")
+```
+ 
+...the region of interest for HNRNPC...
+
+```{r}
+library(org.Hs.eg.db)
+egid <- mapIds(org.Hs.eg.db, "HNRNPC", "ENTREZID", "SYMBOL")
+gene <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)[egid]
+```
+
+and plotting
+ 
+```{r}
+plotTracks(c(genes, data),
+    from=start(gene), to=end(gene), chr="chr14", windowSize=30)
+```
+
+# Interactivity
 
 Create a fun shiny application
 
