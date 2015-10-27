@@ -628,32 +628,7 @@ plotPCA(rld, intgroup = c("dex", "cell"))
 Here, we have used the function `plotPCA()` which comes with [DESeq2][].
 The two terms specified by `intgroup` are the interesting groups for
 labelling the samples; they tell the function to use them to choose
-colors. We can also build the PCA plot from scratch using
-`r CRANpkg("ggplot2")`. This is done by asking the `plotPCA()` function
-to return the data used for plotting rather than building the plot.
-See the [ggplot2][] [documentation](http://docs.ggplot2.org/current/)
-for more details.
-
-```{r}
-(data <- plotPCA(rld, intgroup = c( "dex", "cell"), returnData=TRUE))
-percentVar <- round(100 * attr(data, "percentVar"))
-```
-
-We can then use this data to build up the plot, specifying that the
-color of the points should reflect dexamethasone treatment and the
-shape should reflect the cell line.
-
-```{r}
-library("ggplot2")
-```
-
-```{r ggplotpca, fig.width=6, fig.height=4.5}
-qplot(PC1, PC2, color=dex, shape=cell, data=data) +
-  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
-  ylab(paste0("PC2: ", percentVar[2], "% variance"))
-```
-
-From both visualizations, we see that the differences between cells are
+colors. We see that the differences between cells are
 considerable, though not stronger than the differences due to
 treatment with dexamethasone. This shows why it will be important to
 account for this in differential testing by using a paired design
