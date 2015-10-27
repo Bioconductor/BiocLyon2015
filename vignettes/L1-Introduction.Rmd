@@ -127,13 +127,8 @@ manipulation of data.
 Input a file that contains ALL (acute lymphoblastic leukemia) patient
 information
 
-```{r echo=TRUE, eval=FALSE}
-fname <- file.choose()   ## "ALLphenoData.tsv"
-stopifnot(file.exists(fname))
-pdata <- read.delim(fname)
-```
 ```{r echo=FALSE}
-fname <- "ALLphenoData.tsv"
+fname <- "ALLphenoData.tsv"   # path to fle
 stopifnot(file.exists(fname))
 pdata <- read.delim(fname)
 ```
@@ -163,14 +158,21 @@ head(pdata$sex)
 head(pdata[pdata$age > 21,])
 ```
 
-It seems from below that there are 17 females over 40 in the data set,
-but when sub-setting `pdata` to contain just those individuals 19 rows
-are selected. Why? What can we do to correct this?
+It seems from below that there are 17 females over 40 in the data
+set. However, some individuals have `NA` for the age and / or sex, and
+these `NA` values propagate through some computations. Use `table()`
+to summarize the number of females over 40, and the number of samples
+for which this classification cannot be determined. When _R_
+encounters an `NA` value in a subscript index, it introduces an `NA`
+into the result. Observe this behavior (rows of `NA` values introduced
+into the result) when subsetting using
+`[` with the behavior of the `subset()` function.
 
 ```{r ALL-subset-NA}
 idx <- pdata$sex == "F" & pdata$age > 40
-table(idx)
+table(idx, useNA="ifany")
 dim(pdata[idx,])
+dim(subset(pdata, idx))
 ```
 
 Use the `mol.biol` column to subset the data to contain just
@@ -181,10 +183,11 @@ bcrabl <- pdata[pdata$mol.biol %in% c("BCR/ABL", "NEG"),]
 ```
 
 The `mol.biol` column is a factor, and retains all levels even after
-subsetting. How might you drop the unused factor levels?
+subsetting. It is sometimes convenient to retain factor levels, but in
+our case we use `droplevels()` to removed unused levels
 
 ```{r ALL-BCR/ABL-drop-unused}
-bcrabl$mol.biol <- factor(bcrabl$mol.biol)
+bcrabl$mol.biol <- droplevels(bcrabl$mol.biol)
 ```
 
 The `BT` column is a factor describing B- and T-cell subtypes
@@ -194,7 +197,11 @@ levels(bcrabl$BT)
 ```
 
 How might one collapse B1, B2, ... to a single type B, and likewise
-for T1, T2, ..., so there are only two subtypes, B and T
+for T1, T2, ..., so there are only two subtypes, B and T? One strategy
+is to replace two-letter level (e.g., `B1`) with the single-letter
+level (e.g., `B`). Do this using `substring()` to select the first
+letter of level, and update the previous levels with the new value
+using `levels<-`.
 
 ```{r ALL-BT-recode}
 table(bcrabl$BT)
@@ -229,7 +236,7 @@ boxplot(age ~ mol.biol, bcrabl)
 
 # Presentation: _Bioconductor_
 
-## project tour
+## Project tour
 
 Analysis and comprehension of high-throughput genomic data
 
@@ -381,7 +388,7 @@ Visualization
 - [epivizr][] drives the [epiviz](http://epiviz.cbcb.umd.edu/) genome
   browser from within R; [rtracklayer][] provides easy ways to
   transfer data to and manipulate UCSC browser sessions.
-- Additionl packages include [ggbio][], [OmicCircos][], ...
+- Additional packages include [ggbio][], [OmicCircos][], ...
 
 ![Alt Sequencing Ecosystem](our_figures/SequencingEcosystem.png)
 

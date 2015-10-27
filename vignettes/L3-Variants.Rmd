@@ -62,7 +62,7 @@ Key variant calling tools (non-_Bioconductor_)
 
 [GATK best practices][]
 
-- Pre-processing
+1. Pre-processing
     - Align. High quality aligner, e.g., BWA MEM for DNA, STAR for
       RNASeq
     - Mark duplicates -- reads with identical start and end
@@ -75,7 +75,7 @@ Key variant calling tools (non-_Bioconductor_)
       e.g., sequencer makes single-nucleotide quality assessments, but
       empirical data shows that dinucleotide biases
       exist. Lane-specific corrections.
-- Variant discovery
+2. Variant discovery
     - sensitivity (minimize false negatives) vs. specifity (minimize
       false positives, esp. failing to reject artifacts). Two steps...
     - Call variants (maximize sensitivity).
@@ -88,7 +88,7 @@ Key variant calling tools (non-_Bioconductor_)
             large callsets (exomes / genomes) and highly curateed
             known variants.
           - In practice: _ad hoc_ filter thresholds
-- Callset refinement
+3. Callset refinement
     - Annotation
           - especially _functional_, e.g., location relative to coding
             sequence
