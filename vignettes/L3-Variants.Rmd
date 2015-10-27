@@ -33,7 +33,7 @@ suppressPackageStartupMessages({
   (primarily non-Bioconductor) tools. Exploratory approaches to
   variant calling in Bioconductor. Working with called variants, e.g.,
   classifying variants to genomic regions of interest and predicting
-  effects of variants. Primary packages: [VariantTools][], [r5vc][],
+  effects of variants. Primary packages: [VariantTools][], [h5vc][],
   [VariantAnnotation][], [VariantFiltering][].
 
 
@@ -41,20 +41,72 @@ suppressPackageStartupMessages({
 
 ## Overall work flow
 
-Work flow
+Orientation
 
-Particular challenges
+- Whole-genome versus exome-capture sequencing
+- Germ-line versus somatic (cancer) variants
+- DNA- versus RNA-seq
 
-Standard software tools
+Key variant calling tools (non-_Bioconductor_)
+
+- [BWA][] / [STAR][] / GMAP aligners
+- [Picard][] FASTQ and BAM file management
+- [GATK][] Variant calling, especially germline
+- [muTect][] Somatic variant calling (challenge: low frequency variants)
+
+[BWA]: http://bio-bwa.sourceforge.net/BWA-MEM
+[STAR]: https://code.google.com/p/rna-star/STAR
+[Picard]: https://broadinstitute.github.io/picard/index.html
+[GATK]: https://www.broadinstitute.org/gatk
+[muTect]: https://www.broadinstitute.org/cancer/cga/mutect
+
+[GATK best practices][]
+
+- Pre-processing
+    - Align. High quality aligner, e.g., BWA MEM for DNA, STAR for
+      RNASeq
+    - Mark duplicates -- reads with identical start and end
+      coordinates; likely from the same DNA template
+    - Indel realignment -- aligners often 'solve' indel by introducing
+      mismatches; realign by local consensus of reads. Less important
+      for newer tools
+    - Base recalibration -- machine learning approach to addressing
+      systematic biases in base quality scores produced by sequencers,
+      e.g., sequencer makes single-nucleotide quality assessments, but
+      empirical data shows that dinucleotide biases
+      exist. Lane-specific corrections.
+- Variant discovery
+    - sensitivity (minimize false negatives) vs. specifity (minimize
+      false positives, esp. failing to reject artifacts). Two steps...
+    - Call variants (maximize sensitivity).
+          - Per-sample, followed by joint genotyping across samples.
+          - Current state-of-the-art: haplotype _assembly_ in active
+            regions (germ-line only)
+    - Filter called variants (tune specificity).
+          - Ideal: variant quality score recalibration -- apply
+            machine learning to quality of called variants. Requires
+            large callsets (exomes / genomes) and highly curateed
+            known variants.
+          - In practice: _ad hoc_ filter thresholds
+- Callset refinement
+    - Annotation
+          - especially _functional_, e.g., location relative to coding
+            sequence
+    - Evaluation
 
 ## _Bioconductor_ opportunities
+
+- [h5vc][] for managing nucleotide-level summaries
+- [VariantTools][] for custom calling, filtering and annotation; e.g., 
+  [VariantTools BioC2014 Tutorial](http://bioconductor.org/help/course-materials/2014/BioC2014/Lawrence_Tutorial.pdf)
+- Tools for analysis of called variants (below)
 
 # Called Variants
 
 Classes -- GenomicRanges-like behavior
 
-- VCF -- 'wide'
-- VRanges -- 'tall'
+- _VCF_ -- 'wide'
+- _VRanges_ -- 'tall'
 
 Functions and methods
 
@@ -288,7 +340,12 @@ For this lab, please work through the excellent [vignette] in the
 [VariantFiltering][] package.
 
 [VariantAnnotation]: https://bioconductor.org/packages/VariantFiltering
-[ensemblVEP]: https://bioconductor.org/packages/ensemblVEP
-[myvariant]: https://bioconductor.org/packages/myvariant
 [VariantFiltering]: https://bioconductor.org/packages/VariantFiltering
+[VariantTools]: https://bioconductor.org/packages/VariantTools
+[ensemblVEP]: https://bioconductor.org/packages/ensemblVEP
+[h5vc]: https://bioconductor.org/packages/h5vc
+[myvariant]: https://bioconductor.org/packages/myvariant
+
 [vignette]: http://bioconductor.org/packages/3.2/bioc/vignettes/VariantFiltering/inst/doc/usingVariantFiltering.pdf
+
+[GATK best practices]: https://www.broadinstitute.org/gatk/guide/best-practices.php

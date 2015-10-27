@@ -72,18 +72,13 @@ Record co-variates
 Be aware of _batch effects_
 
 - Known
-
     - Phenotypic covariates, e.g., age, gender
     - Experimental covariates, e.g., lab or date of processing
     - Incorporate into linear model, at least approximately
-
 - Unknown
-
     - Or just unexpected / undetected
     - Characterize using, e.g., `r Biocpkg("sva")`.
-  
 - Surrogate variable analysis
-
     - Leek et al., 2010, Nature Reviews Genetics 11
       [733-739](http://www.nature.com/nrg/journal/v11/n10/abs/nrg2825.html),
       Leek & Story PLoS Genet 3(9):
@@ -134,16 +129,16 @@ Application-specific, e.g.,
 Alignment strategies
 
 - _de novo_
-  - No reference genome; considerable sequencing and computational
-    resources
+    - No reference genome; considerable sequencing and computational
+      resources
 - Genome
-  - Established reference genome
-  - Splice-aware aligners
-  - Novel transcript discovery
+    - Established reference genome
+    - Splice-aware aligners
+    - Novel transcript discovery
 - Transcriptome
-  - Established reference genome; reliable gene model
-  - Simple aligners
-  - Known gene / transcript expression
+    - Established reference genome; reliable gene model
+    - Simple aligners
+    - Known gene / transcript expression
 
 Splice-aware aligners (and _Bioconductor_ wrappers)
 
@@ -172,7 +167,7 @@ Splice-aware aligners (and _Bioconductor_ wrappers)
 - [Cufflinks](http://cole-trapnell-lab.github.io/cufflinks/)
   ([doi](http://dx.doi.org/10.1038/nprot.2012.016)) takes _tophat_
   output and estimate existing and novel transcript abundance.
-  [How Cufflinks Works](http://cufflinks.cbcb.umd.edu/howitworks.html)
+  [How Cufflinks Works](http://cole-trapnell-lab.github.io/cufflinks/papers)
 - [Cuffdiff](http://cole-trapnell-lab.github.io/cufflinks/cuffdiff/)
   assesses statistical significance of estimated abundances between
   experimental groups
@@ -187,6 +182,9 @@ Splice-aware aligners (and _Bioconductor_ wrappers)
   radically different approach: from FASTQ to count table without BAM
   files.
 - Very fast, almost as accurate.
+- Hints on
+  [how it works](https://liorpachter.wordpress.com/2015/05/10/near-optimal-rna-seq-quantification-with-kallisto/);
+  [arXiv](http://arxiv.org/abs/1505.02710)
 
 ## Analysis
 
@@ -201,11 +199,11 @@ Summarization
 
 - Counts _per se_, rather than a summary (RPKM, FRPKM, ...), are
   relevant for analysis
-  - For a given gene, larger counts imply more information; RPKM etc.,
-    treat all estimates as equally informative.
-  - Comparison is across samples at _each_ region of interest; all
-    samples have the same region of interest, so modulo library size
-    there is no need to correct for, e.g., gene length or mapability.
+    - For a given gene, larger counts imply more information; RPKM etc.,
+      treat all estimates as equally informative.
+    - Comparison is across samples at _each_ region of interest; all
+      samples have the same region of interest, so modulo library size
+      there is no need to correct for, e.g., gene length or mapability.
 
 Normalization
 
