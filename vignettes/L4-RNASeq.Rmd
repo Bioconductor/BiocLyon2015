@@ -37,6 +37,14 @@ suppressPackageStartupMessages({
 
 # Presentation: RNA-seq work flow
 
+Resources: [Anders, CSAMA, 2015][], [Love, CSAMA, 2015][],
+[Huber, CSAMA, 2015][], [Pimentel, YouTube, 2015][]
+
+[Anders, CSAMA, 2015]: http://bioconductor.org/help/course-materials/2015/CSAMA2015/lect/L05-deseq2-anders.pdf
+[Pimentel, YouTube, 2015]: https://www.youtube.com/watch?v=ztyjiCCt_lM
+[Love, CSAMA, 2015]: http://bioconductor.org/help/course-materials/2015/CSAMA2015/lect/L06-rna-stats-love.pdf
+[Huber, CSAMA, 2015]: http://bioconductor.org/help/course-materials/2015/CSAMA2015/lect/L03-testing-huber.pdf
+
 ## Experimental design
 
 Keep it simple
@@ -197,8 +205,9 @@ Unique statistical aspects
 
 Summarization
 
-- Counts _per se_, rather than a summary (RPKM, FRPKM, ...), are
+- Counts _per se_, rather than a summary (RPKM, FPKM, ...), are
   relevant for analysis
+
     - For a given gene, larger counts imply more information; RPKM etc.,
       treat all estimates as equally informative.
     - Comparison is across samples at _each_ region of interest; all
