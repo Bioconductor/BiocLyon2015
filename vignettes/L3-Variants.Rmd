@@ -185,23 +185,45 @@ Genotype FORMAT and samples
 
 ### Input and manipulation
 
-Input and manipulation: [VariantAnnotation][] `readVcf()`,
+Input and manipulation: [VariantAnnotation][]
+
+```{r}
+fl <- system.file("extdata", "chr22.vcf.gz", package="VariantAnnotation")
+```
 
 Headers
 
 - `scanVcfHeader()`
+
+    ```{r}
+    scanVcfHeader(fl)
+    info(scanVcfHeader(fl))
+    ```
 
 Data
 
 - `readVcf()`
 - Accessors, e.g., `info()`, `geno()`
 
+    ```{r}
+    vcf <- readVcf(fl, "hg19")
+    vcf
+    head(info(vcf))
+    geno(vcf)
+    head(geno(vcf)[["GT"]])
+    ```
+
 Restrictions
 
 - `readInfo()`: simple vector of 
 - `readGeno()`: simple matrix of genotypes
-- `ScanVcfParam()`, 
-- 'tabix' indexing for coordinate-based access
+
+    ```{r}
+    head(readGeno(fl, "GT"))
+    ```
+
+- `ScanVcfParam()`: limit input to specific `fixed`, `info`, `geno`,
+  fields, `samples`, and genomic coordinates (`which`)
 
 Chunks
 
@@ -209,7 +231,6 @@ Chunks
   efficient 'vectorized' computation.
   
     ```{r}
-    fl <- system.file("extdata", "chr22.vcf.gz", package="VariantAnnotation")
     dim(readVcf(fl, "hg19"))     # 10376 records
 
     vcf <- open(VcfFile(fl, yieldSize=10000))
@@ -244,95 +265,6 @@ Via additional resources
 - [ensemblVEP][]
 - SIFT, PolyPhen
 - [myvariant][]
-
-### Filtering
-
-- Common practice to create intermediate files with variants of
-  interest
-- Pre-filters: simple text-based search of each line. Fast but error-prone
-
-    ```{r}
-    isGermlinePrefilter <- function(x) {
-        grepl("Germline", x, fixed=TRUE)
-    }
-    
-    notInDbsnpPrefilter <- function(x) {
-        !(grepl("dbsnp", x, fixed=TRUE))
-    }
-    ```
-
-- Filters: precise specification of variants to keep
-
-    ```{r}
-    ## We will use isSNV() to filter only SNVs
-    
-    allelicDepth <- function(x) {
-        ##  ratio of AD of the "alternate allele" for the tumor sample
-        ##  OR "reference allele" for normal samples to total reads for
-        ##  the sample should be greater than some threshold (say 0.1,
-        ##  that is: at least 10% of the sample should have the allele
-        ##  of interest)
-        ad <- geno(x)$AD
-        tumorPct <- ad[,1,2,drop=FALSE] / rowSums(ad[,1,,drop=FALSE])
-        normPct <- ad[,2,1, drop=FALSE] / rowSums(ad[,2,,drop=FALSE])
-        test <- (tumorPct > 0.1) | (normPct > 0.1)
-        as.vector(!is.na(test) & test)
-    }
-    ```
-    
-- `FilterRules()` collects several filters, filters can be easily
-  turned on and off, statsitics can be collected.
-
-    ```{r}
-    prefilters <- FilterRules(list(germline=isGermlinePrefilter, 
-                                   dbsnp=notInDbsnpPrefilter))
-    filters <- FilterRules(list(isSNV=isSNV, AD=allelicDepth))
-    ```
-
-- `filterVcf()`: sepcify source and destination files and filters
-
-    ```{r}
-    file.gz     <- system.file("extdata", "chr7-sub.vcf.gz", 
-                               package="VariantAnnotation")
-    file.gz.tbi <- system.file("extdata", "chr7-sub.vcf.gz.tbi", 
-                               package="VariantAnnotation")
-    destination.file <- "filtered.vcf"
-    tabix.file <- VcfFile(file.gz, yieldSize=10000)
-    filterVcf(tabix.file,  "hg19", destination.file,
-              prefilters=prefilters, filters=filters, verbose=TRUE)
-    ```
-
-### Integration with _AnnotationHub_ and _GenomicFeatures_
-
-E.g., any SNPs in ENCODE regulatory marks?
-
-- CTCF Transcription Factor Binding Regions Identified in MCF-7 Breast
-  Cancer Cell Line
-
-    ```{r}
-    library(AnnotationHub)
-    hub <- AnnotationHub()
-    id <- names(query(hub, "wgEncodeUwTfbsMcf7CtcfStdPkRep1.narrowPeak"))
-    mcf7.gr <- hub[[id]]
-    mcf7.gr
-    ```
-
-- Do filtered SNPs (from previous exercise) overlap any binding sites?
-
-    ```{r}
-    vcf <- readVcf(destination.file, "hg19")
-    seqlevels(vcf) <- paste("chr", seqlevels(vcf), sep="")
-    ov.mcf7 <- findOverlaps(vcf, mcf7.gr)
-    ov.mcf7
-    ```
-    
-- What part of the gene are they in?
-
-    ```{r}
-    library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-    txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene 
-    locateVariants(vcf[6,], txdb, AllVariants())
-    ```
 
 ## Lab: _VariantFiltering_
 
