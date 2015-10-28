@@ -26,13 +26,115 @@ knitr::opts_chunk$set(
   reproducible and collaborative research. Primary packages: [Gviz][],
   [shiny][].
 
-# _Gviz_
+# Three approaches to visualizing data
 
-Genomic visualizations
+```{r}
+fl <- "BRFSS-subset.csv"
+brfss <- read.csv(fl)
+brfss2010 <- brfss[brfss$Year == "2010",]
+```
 
-## Exercise: Review section 2 of the [Gviz][] vignette
+## 'base' graphics
 
-## Exercise: Gene model and BAM data
+```{r}
+## set layout, capture old options
+opar <- par(mfcol=c(1, 2))
+plot(sqrt(Weight) ~ Height, brfss2010[brfss2010$Sex == "Female", ],
+    main="2010, Female")
+plot(sqrt(Weight) ~ Height, brfss2010[brfss2010$Sex == "Male", ],
+    main="2010, Male")
+## restore old options
+par(mfcol=c(1, 1))
+```
+
+## _lattice_
+
+```{r}
+library(lattice)
+xyplot(sqrt(Weight) ~ Height | Sex, brfss2010)
+bwplot(sqrt(Weight) ~ factor(Year) | Sex, brfss, panel=panel.violin)
+```
+
+## _ggplot2_
+
+- Create a plot with `ggplot()`
+- Add _layers_ (e.g., `geom_density()`) and _aesthetics_ (e.g., `aes()`)
+- [ggplot2 documentation][]
+
+```{r}
+library(ggplot2)
+ggplot(brfss2010) + geom_density(alpha=.2) + aes(sqrt(Weight), fill=Sex)
+```
+
+[ggplot2 documentation]: http://docs.ggplot2.org/current/
+
+### Exercise
+
+Revisit the DESeq2 workflow from yesterday
+
+```{r}
+library(DESeq2)
+library(airway)
+data(airway)
+dds = DESeqDataSet(airway, design= ~ cell + dex)
+dds = DESeq(dds)
+res = results(dds)
+```
+
+The class of `res` is `DataFrame`, but to work with `ggplot2` we need
+to coerce it to a `data.frame`.
+
+```{r}
+df <- as.data.frame(res)
+```
+
+Use `ggplot2` to create an MA plot, with log fold change on the y-axis
+plotted against log base mean on the x-axis.
+
+```{r, eval=FALSE}
+ggplot(???, aes(???, ???)) + geom_point()
+```
+
+One problem when plotting many points is that points overlap. Modify
+the plot by using the `stat_binhex()` transformation. Explore other
+approaches to effectively displaying many points (e.g.,
+`stat_density2d()`; the `alpha` argument to `geom_point()`)?
+
+Check out the [HilbertCurve][] package for addressing another common
+problem. As an illustration, here we calculate GC content in 1000nt
+'tiles' across chromosome 1...
+
+```{r}
+library(BSgenome.Hsapiens.UCSC.hg19)
+len = seqlengths(BSgenome.Hsapiens.UCSC.hg19)["chr1"]
+tiles = tileGenome(len, tilewidth=1000, cut.last.tile.in.chrom=TRUE)
+seq = getSeq(Hsapiens, tiles)
+gc = letterFrequency(seq, "GC")
+maxgc = max(gc)
+```
+
+...and then plot GC content as a Hilbert curve.
+
+```{r}
+library(HilbertCurve)
+library(circlize)
+library(RColorBrewer)
+
+col_fun=colorRamp2(seq(0, maxgc, length.out=9), 
+                   brewer.pal(9, "YlOrRd"))
+hc = HilbertCurve(1, len, 6, mode="pixel")
+hc_layer(hc, tiles, col=col_fun(gc))
+```
+
+[HilbertCurve]: https://bioconductor.org/packages/HilbertCurve
+
+# Genomic visualizations
+
+## _Gviz_
+
+### Exercise: Review section 2 of the [Gviz][] vignette
+
+### Exercise: Gene model and BAM data
 
 Visualize a BAM file from [RNAseqData.HNRNPC.bam.chr14][] around the
 HNRNPC gene. Do this by creating an gene region track...
@@ -76,8 +178,3 @@ Create a fun shiny application
 
 Advanced: implement _BAMSpector_ to explore BAM files in the context
 of known gene annotation.
-
-# Lab: _ReportingTools_
-
-Transform the RNA-seq differential expression work flow into a
-_ReportingTools_ report.
