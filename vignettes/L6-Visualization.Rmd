@@ -115,13 +115,12 @@ maxgc = max(gc)
 
 ...and then plot GC content as a Hilbert curve.
 
-```{r}
+```{r, message=FALSE}
 library(HilbertCurve)
 library(circlize)
 library(RColorBrewer)
 
-col_fun=colorRamp2(seq(0, maxgc, length.out=9), 
-                   brewer.pal(9, "YlOrRd"))
+col_fun=colorRamp2(seq(0, maxgc, length.out=9), brewer.pal(9, "YlOrRd"))
 hc = HilbertCurve(1, len, 6, mode="pixel")
 hc_layer(hc, tiles, col=col_fun(gc))
 ```
