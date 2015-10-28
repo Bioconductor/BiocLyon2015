@@ -24,20 +24,15 @@ knitr::opts_chunk$set(
   and novel genomic visualizations in Bioconductor. Approaches to
   interactive visualization with shiny. Adopting strategies for
   reproducible and collaborative research. Primary packages: [Gviz][],
-  [ReportingTools][], [shiny][], ([ggbio][]).
-
-
-# _ggplot2_
-
-Augements base graphics; very popular
+  [shiny][].
 
 # _Gviz_
 
 Genomic visualizations
 
-Exercises
+## Exercise: Review section 2 of the [Gviz][] vignette
 
-(20 minutes) Review section 2 of the [Gviz][] vignette
+## Exercise: Gene model and BAM data
 
 Visualize a BAM file from [RNAseqData.HNRNPC.bam.chr14][] around the
 HNRNPC gene. Do this by creating an gene region track...
@@ -71,6 +66,9 @@ and plotting
 plotTracks(c(genes, data),
     from=start(gene), to=end(gene), chr="chr14", windowSize=30)
 ```
+
+Add additional BAM files to the figure. Can you adjust the gene being
+displayed?
 
 # Interactivity
 
